@@ -7,7 +7,7 @@
 typedef struct s_symbol
 {
 	char 	chr;
-	size_t	size;
+	int		size;
 }				t_symbol;
 
 #endif

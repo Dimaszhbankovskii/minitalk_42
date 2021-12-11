@@ -1,23 +1,25 @@
 #include "minitalk.h"
 
-void	send_message(int pid, char *message)
+void	send_message(int pid, char *str)
 {
-	size_t	len;
-	size_t	i;
-	int 	rank;
+	int	i;
+	int	j;
+	int	len;
 
-	len = ft_strlen(message);
 	i = 0;
-	while (i < len)
+	len = ft_strlen(str);
+	while (i <= len)
 	{
-		rank = 0b10000000;
-		while (rank)
+		j = 7;
+		while (j > -1)
 		{
-			if (message[i] & rank)
-				kill(pid, SIGUSR1);
-			else
-				kill(pid, SIGUSR2);
-			rank >>= 1;
+			if ((str[i] >> j) & 1)
+				if (kill(pid, SIGUSR1) < 0)
+					ft_putstr_fd("Error kill SIGUSR1\n", 1);
+			if (!((str[i] >> j) & 1))
+				if (kill(pid, SIGUSR2) < 0)
+					ft_putstr_fd("Error kill SIGUSR1\n", 1);
+			j--;
 			usleep(100);
 		}
 		i++;
@@ -26,14 +28,9 @@ void	send_message(int pid, char *message)
 
 int main(int argc, char **argv)
 {
-	int pid;
-
-	if (argc == 3)
-	{
-		pid = ft_atoi(argv[1]);
-		send_message(pid, argv[2]);
-	}
-	else
+	if (argc != 3)
 		ft_putstr_fd("usage: client server_pid msg_to_send\n", 1);
+	else
+		send_message(ft_atoi(argv[1]), argv[2]);
 	return (0);
 }
