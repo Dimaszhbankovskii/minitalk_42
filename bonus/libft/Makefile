@@ -45,32 +45,31 @@ SRCS_BONUS	=	ft_lstnew.c \
 				ft_lstiter.c \
 				ft_lstmap.c
 
-OBJS	=	${patsubst %.c,%.o,${SRCS}}
+OBJS		=	${patsubst %.c,%.o,${SRCS}}
 
 OBJS_BONUS	=	${patsubst %.c,%.o,${SRCS_BONUS}}
 
-CFLAGS	=	-Wall -Werror -Wextra
+CFLAGS		=	-Wall -Werror -Wextra
 
-COMPILE = gcc ${CFLAGS} -c
+COMPILE		=	gcc ${CFLAGS} -c -I.
 
-LIB	=	ar -rc
+LIB			=	ar -rcs
 
-RANLIB	=	ranlib
-
-RM	=	rm -f
+RM			=	rm -rf
 
 all: ${NAME}
 
 ${NAME}: ${OBJS} Makefile libft.h
 	@${LIB} ${NAME} ${OBJS}
-	@${RANLIB} ${NAME}
 
 %.o : %.c
 	@${COMPILE} $< -o $@ -I.
 
 bonus: ${OBJS_BONUS} Makefile libft.h
 	@${LIB} ${NAME} ${OBJS_BONUS}
-	@${RANLIB} ${NAME}
+
+${OBJS_BONUS}:
+	@${COMPILE} ${SRCS_BONUS}
 
 re: fclean all
 

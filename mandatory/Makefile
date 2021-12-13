@@ -1,31 +1,47 @@
-SERVER	=	server
-CLIENT	=	client
-CC		=	gcc
-CFLAGS	=	-Wall -Werror -Wextra
-#LIBFT	=	-L./libft -lft
-#
-#SRCS_SERVER	=	server.c
-#SRCS_CLIENT	=	client.c
+SERVER		=	server
+CLIENT		=	client
+CC			=	gcc
+CFLAGS		=	-Wall -Werror -Wextra
+LIBFT		=	-L./libft -lft
+INCLUDES	=	-I./includes
 
-#OBJS_SERVER	=	$(SRCS_SERVER:.c=.o)
-#OBJS_CLIENT	=	$(SRCS_CLIENT:.c=.o)
+SRCS_DIR	=	./srcs/
+SRCS_SERVER	=	server.c
+SRCS_CLIENT	=	client.c
 
-all :
-	make -C ./libft
-	$(CC) $(CFLAGS) server.c ./libft/libft.a -o $(SERVER)
-	$(CC) $(CFLAGS) client.c ./libft/libft.a -o $(CLIENT)
+OBJS_DIR	=	./objs/
+OBJS_SERVER	=	${patsubst %.c, %.o, $(addprefix ${OBJS_DIR}, $(SRCS_SERVER))}
+OBJS_CLIENT	=	${patsubst %.c, %.o, $(addprefix ${OBJS_DIR}, $(SRCS_CLIENT))}
 
-#%.o : %.c
-#	$(CC) -c $(CFLAGS) $< -o $@ -I.
+all : $(SERVER) $(CLIENT)
+	@echo "program server and client was done."
+
+$(SERVER) : $(LIBFT) $(OBJS_SERVER) $(OBJS_DIR)
+	@$(CC) $(CFLAGS) $(LIBFT) $(OBJS_SERVER) $(INCLUDES) -o $@
+
+$(CLIENT) : $(LIBFT) $(OBJS_CLIENT) $(OBJS_DIR)
+	@$(CC) $(CFLAGS) $(LIBFT) $(OBJS_CLIENT) $(INCLUDES) -o $@
+
+$(LIBFT) : ./libft
+	@$(MAKE) -C ./libft
+
+$(addprefix $(OBJS_DIR), %.o) : $(addprefix $(SRCS_DIR), %.c) $(OBJS_DIR)
+	@$(CC) -c $(CFLAGS) $< -o $@ $(INCLUDES)
+
+$(OBJS_DIR) :
+	@mkdir -p $@
 
 clean :
-	make clean -C ./libft
-	rm -rf client.o server.o
+	@$(MAKE) clean -C ./libft
+	@rm -rf $(OBJS_DIR)
+	@echo "command 'clean' was done."
 
 fclean : clean
-	make fclean -C ./libft
-	rm -rf $(SERVER) $(CLIENT)
+	@$(MAKE) fclean -C ./libft
+	@rm -rf $(SERVER) $(CLIENT)
+	@echo "command 'fclean' was done."
 
 re : fclean all
+	@echo "command 're' was done."
 
 .PHONY: all clean fclean re
