@@ -8,6 +8,7 @@ typedef struct	s_data
 {
 	char	*message;
 	int		len_message;
+	int		index;
 	int		size;
 	int		pid;
 }				t_data;

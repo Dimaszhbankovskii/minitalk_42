@@ -2,92 +2,71 @@
 
 t_data	data;
 
-// void	send_message(int pid, char *str)
+// void	send_bit(int signum, siginfo_t *info, void *context)
 // {
-// 	int	i;
-// 	int	j;
-// 	int	len;
+// 	char	c;
 
-// 	i = 0;
-// 	len = ft_strlen(str);
-// 	while (i <= len)
+// 	(void)signum;
+// 	(void)info;
+// 	(void)context;
+// 	c = *(data.message);
+// 	if ((c >> data.size) & 1)
+// 		if (kill(data.pid, SIGUSR1) < 0)
+// 			ft_putstr_fd("Error kill SIGUSR1\n", 1);
+// 	if (!((c >> data.size) & 1))
+// 		if (kill(data.pid, SIGUSR2) < 0)
+// 			ft_putstr_fd("Error kill SIGUSR2\n", 1);
+// 	if (data.size == 0)
 // 	{
-// 		j = 7;
-// 		while (j > -1)
-// 		{
-// 			if ((str[i] >> j) & 1)
-// 				if (kill(pid, SIGUSR1) < 0)
-// 					ft_putstr_fd("Error kill SIGUSR1\n", 1);
-// 			if (!((str[i] >> j) & 1))
-// 				if (kill(pid, SIGUSR2) < 0)
-// 					ft_putstr_fd("Error kill SIGUSR1\n", 1);
-// 			j--;
-// 			usleep(100);
-// 		}
-// 		i++;
+// 		if (!(*data.message))
+// 			exit (0);
+// 		data.size = 7;
+// 		data.message++;
 // 	}
+// 	else
+// 		data.size--;
 // }
 
-void	send_bit(int signum, struct __siginfo *info, void *context)
+void	send_bit(int signum)
 {
-	char	c;
-
-	(void)signum;
-	(void)info;
-	(void)context;
-	c = *(data.message);
-	if ((c >> data.size) & 1)
+	if (signum != SIGUSR1)
+		ft_putstr_fd("error SIG1\n", 1);
+	if ((data.message[data.index] >> data.size) & 1)
 		if (kill(data.pid, SIGUSR1) < 0)
-			ft_putstr_fd("Error kill SIGUSR1\n", 1);
-	if (!((c >> data.size) & 1))
+			ft_putstr_fd("Error kill SIGUSR1\n", 1);	
+	if (!((data.message[data.index] >> data.size) & 1))
 		if (kill(data.pid, SIGUSR2) < 0)
 			ft_putstr_fd("Error kill SIGUSR2\n", 1);
 	if (data.size == 0)
 	{
-		if (!(*data.message))
+		if (!data.message[data.index])
 			exit (0);
 		data.size = 7;
-		data.message++;
+		data.index++;
 	}
 	else
 		data.size--;
 }
 
-// void	send_zero(int signum, struct __siginfo *info, void *context)
-// {
-// 	(void)signum;
-// 	(void)info;
-// 	(void)context;
-// }
-
 int main(int argc, char **argv)
 {
-	struct sigaction	send;
-	// struct sigaction	zero;	
+	// struct sigaction	send;
 
 	if (argc != 3)
 		ft_putstr_fd("usage: client server_pid msg_to_send\n", 1);
-
-	send.__sigaction_u.__sa_sigaction = send_bit;
-	send.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGUSR1, &send, NULL) < 0)
-		ft_putstr_fd("Error sigaction SIGUSR1\n", 1);
-
-
-	// if (sigaction(SIGUSR2, &send_bit, NULL) < 0)
-	// 	ft_putstr_fd("Error sigaction SIGUSR2\n", 1);
-	// zero.__sigaction_u.__sa_sigaction = send_one;
-	// zero.sa_flags = SA_SIGINFO;
-		
+	// send.__sigaction_u.__sa_sigaction = send_bit;
+	// send.sa_flags = SA_SIGINFO;
+	// if (sigaction(SIGUSR1, &send, NULL) < 0)
+		// ft_putstr_fd("Error sigaction SIGUSR1\n", 1);
 	data.message = argv[2];
 	data.len_message = ft_strlen(data.message);
+	data.index = 0;
 	data.message[data.len_message] = '\0'; // проверить, что надо
 	data.size = 7;	// какой размер для Unicode
 	data.pid = ft_atoi(argv[1]);
-	
+	signal(SIGUSR1, &send_bit);	
 	if (kill(data.pid, SIGUSR1) < 0)
 		ft_putstr_fd("Error kill SIGUSR1\n", 1);
-	
 	while (1)
 		pause ();
 	return (0);
