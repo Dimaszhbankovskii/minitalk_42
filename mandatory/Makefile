@@ -8,6 +8,8 @@ INCLUDES	=	-I./includes
 SRCS_DIR	=	./srcs/
 SRCS_SERVER	=	server.c
 SRCS_CLIENT	=	client.c
+SRCS_SERVER_C	= $(addprefix ${SRCS_DIR}, $(SRCS_SERVER))
+SRCS_CLIENT_C	= $(addprefix ${SRCS_DIR}, $(SRCS_CLIENT))
 
 OBJS_DIR	=	./objs/
 OBJS_SERVER	=	${patsubst %.c, %.o, $(addprefix ${OBJS_DIR}, $(SRCS_SERVER))}
@@ -16,11 +18,13 @@ OBJS_CLIENT	=	${patsubst %.c, %.o, $(addprefix ${OBJS_DIR}, $(SRCS_CLIENT))}
 all : $(SERVER) $(CLIENT)
 	@echo "program server and client was done."
 
-$(SERVER) : $(LIBFT) $(OBJS_SERVER) $(OBJS_DIR)
+$(SERVER) : $(LIBFT) $(OBJS_SERVER) $(OBJS_DIR) $(SRCS_SERVER_C)
 	@$(CC) $(CFLAGS) $(LIBFT) $(OBJS_SERVER) $(INCLUDES) -o $@
+	@echo "program server was done."
 
-$(CLIENT) : $(LIBFT) $(OBJS_CLIENT) $(OBJS_DIR)
+$(CLIENT) : $(LIBFT) $(OBJS_CLIENT) $(OBJS_DIR) $(SRCS_CLIENT_C)
 	@$(CC) $(CFLAGS) $(LIBFT) $(OBJS_CLIENT) $(INCLUDES) -o $@
+	@echo "program client was done."
 
 $(LIBFT) : ./libft
 	@$(MAKE) -C ./libft
