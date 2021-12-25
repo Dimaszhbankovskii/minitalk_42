@@ -25,9 +25,6 @@ char	*ft_add_chr(char *s, char c)
 	}
 	str[i] = c;
 	str[i + 1] = '\0';
-	printf("check 1\n");
-	printf("s:-->%s<--\n", s);
-	printf("str:-->%s<--\n", str);
 	free (s);
 	return (str);
 }
@@ -44,14 +41,18 @@ void	get_message(int signum, siginfo_t *info, void *context)
 		symbol.size++;
 	if (symbol.size > 7)
 	{
-		printf("%c\n", symbol.chr);
 		symbol.mess = ft_add_chr(symbol.mess, symbol.chr);
-		printf("%s\n", symbol.mess);
-		if (!symbol.chr)
+		if (!symbol.mess)
+			ft_putstr_fd("error memory\n", 1);
+		if (symbol.chr == '\0')
 		{
-			// ft_putstr_fd(symbol.mess, 1);
+			ft_putstr_fd(symbol.mess, 1);
+			ft_putchar_fd('\n', 1);
+			free (symbol.mess);
+			symbol.mess = NULL;
 			symbol.chr = 0;
 			symbol.size = 0;
+			kill(info->si_pid, SIGUSR2);
 			return ;
 		}
 		symbol.chr = 0;
