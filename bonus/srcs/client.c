@@ -4,8 +4,20 @@ t_send	g_mess;
 
 static void	error_mess(void)
 {
-	ft_putstr_fd("error input\n", 1);
+	ft_putstr_fd("error: invalid pid or date\n", 1);
+	ft_putstr_fd("try again\n", 1);
 	exit (0);
+}
+
+static int	input_validation(char *pid)
+{
+	while (*pid)
+	{
+		if (!(ft_isdigit(*pid)))
+			return (0);
+		pid++;
+	}
+	return (1);
 }
 
 static void	send(int signum, siginfo_t *info, void *context)
@@ -21,7 +33,7 @@ static void	send(int signum, siginfo_t *info, void *context)
 	if (!(c >> g_mess.size & 1))
 		if (kill(info->si_pid, SIGUSR2) < 0)
 			ft_putstr_fd("error kill SIGUSR2\n", 1);
-	if (g_mess.size == 0)
+	if (!g_mess.size)
 	{
 		if (!c)
 			exit(0);
@@ -32,33 +44,24 @@ static void	send(int signum, siginfo_t *info, void *context)
 		g_mess.size--;
 }
 
-static void	empty(int signum, siginfo_t *info, void *context)
-{
-	(void)signum;
-	(void)info;
-	(void)context;
-}
-
 int	main(int argc, char **argv)
 {
 	struct sigaction	action;
-	struct sigaction	inaction;
 
-	if (argc != 3)
+	if (argc != 3 || !input_validation(argv[1]))
 		error_mess();
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = &send;
 	if (sigaction(SIGUSR1, &action, NULL) < 0)
-		ft_putstr_fd("error SIGUSR1\n", 1);
-	inaction.sa_flags = SA_SIGINFO;
-	inaction.sa_sigaction = &empty;
-	if (sigaction(SIGUSR2, &inaction, NULL) < 0)
-		ft_putstr_fd("error SIGUSR2\n", 1);
+		ft_putstr_fd("error sigaction SIGUSR1\n", 1);
 	g_mess.pid = ft_atoi(argv[1]);
 	g_mess.mess = argv[2];
 	g_mess.size = 7;
 	if (kill(g_mess.pid, SIGUSR1) < 0)
-		ft_putstr_fd("error begin of connect\n", 1);
+	{
+		ft_putstr_fd("error: connect with server\n", 1);
+		return (-1);
+	}
 	while (1)
 		pause();
 	return (0);

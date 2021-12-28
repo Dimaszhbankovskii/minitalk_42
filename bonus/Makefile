@@ -23,17 +23,17 @@ $(SERVER) : $(LIBFT) $(OBJS_SERVER) $(OBJS_DIR) $(SRCS_SERVER_C)
 	@echo "program server was done."
 
 $(CLIENT) : $(LIBFT) $(OBJS_CLIENT) $(OBJS_DIR) $(SRCS_CLIENT_C)
-	$(CC) $(CFLAGS) -o $@ $(OBJS_CLIENT) $(LIBFT) $(INCLUDES)
+	@$(CC) $(CFLAGS) -o $@ $(OBJS_CLIENT) $(LIBFT) $(INCLUDES)
 	@echo "program client was done."
 
 $(LIBFT) : ./libft
-	$(MAKE) -C ./libft
+	@$(MAKE) -C ./libft
 
 $(addprefix $(OBJS_DIR), %.o) : $(addprefix $(SRCS_DIR), %.c) $(OBJS_DIR)
-	$(CC) -c $(CFLAGS) $< -o $@ $(INCLUDES)
+	@$(CC) -c $(CFLAGS) $< -o $@ $(INCLUDES)
 
 $(OBJS_DIR) :
-	mkdir -p $@
+	@mkdir -p $@
 
 clean :
 	@rm -rf $(OBJS_DIR)
