@@ -3,6 +3,7 @@ CLIENT		=	client
 CC			=	gcc
 CFLAGS		=	-Wall -Werror -Wextra
 LIBFT		=	-L./libft -lft
+LIB			=	libft
 INCLUDES	=	-I./includes
 
 SRCS_DIR	=	./srcs/
@@ -18,15 +19,15 @@ OBJS_CLIENT	=	${patsubst %.c, %.o, $(addprefix ${OBJS_DIR}, $(SRCS_CLIENT))}
 all : $(SERVER) $(CLIENT)
 	@echo "program server and client was done."
 
-$(SERVER) : $(LIBFT) $(OBJS_SERVER) $(OBJS_DIR) $(SRCS_SERVER_C)
-	$(CC) $(CFLAGS) -o $@ $(OBJS_SERVER) $(LIBFT) $(INCLUDES)
+$(SERVER) : libft/libft.a $(OBJS_SERVER) $(OBJS_DIR) $(SRCS_SERVER_C)
+	@$(CC) $(CFLAGS) -o $@ $(OBJS_SERVER) $(LIBFT) $(INCLUDES)
 	@echo "program server was done."
 
-$(CLIENT) : $(LIBFT) $(OBJS_CLIENT) $(OBJS_DIR) $(SRCS_CLIENT_C)
+$(CLIENT) : $(LIB) $(OBJS_CLIENT) $(OBJS_DIR) $(SRCS_CLIENT_C)
 	@$(CC) $(CFLAGS) -o $@ $(OBJS_CLIENT) $(LIBFT) $(INCLUDES)
 	@echo "program client was done."
 
-$(LIBFT) : ./libft
+libft/libft.a :
 	@$(MAKE) -C ./libft
 
 $(addprefix $(OBJS_DIR), %.o) : $(addprefix $(SRCS_DIR), %.c) $(OBJS_DIR)
